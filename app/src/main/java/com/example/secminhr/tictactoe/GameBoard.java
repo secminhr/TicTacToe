@@ -5,49 +5,70 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.Display;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.GridLayout;
 
-public class GameBoard extends GridLayout {
+public class GameBoard extends GridLayout implements View.OnClickListener {
 
     final private int length = 3;
     private float cellWidth = 0f;
     private Paint paint = new Paint();
     private OnFinishedListener listener;
+    //In thi project, we'll use 1 represent O, and -1 represent X
+    int currentPlayer = 1;
+
+
+    private GameCell[][] cells = {{new GameCell(getContext()), new GameCell(getContext()), new GameCell(getContext())},
+            {new GameCell(getContext()), new GameCell(getContext()), new GameCell(getContext())},
+            {new GameCell(getContext()), new GameCell(getContext()), new GameCell(getContext())}};
+
+    private int winner;
 
     interface OnFinishedListener {
         void finished(int winner);
     }
 
-    //In thi project, we'll use 1 represent O, and -1 represent X
-    int currentState = 1;
-
-    private GameCell[][] cells = {{new GameCell(getContext(), this), new GameCell(getContext(), this), new GameCell(getContext(), this)},
-                                  {new GameCell(getContext(), this), new GameCell(getContext(), this), new GameCell(getContext(), this)},
-                                  {new GameCell(getContext(), this), new GameCell(getContext(), this), new GameCell(getContext(), this)}};
-
-    private int winner;
-
     public GameBoard(Context context) {
         super(context);
         setWillNotDraw(false);
+        for(GameCell[] arr: cells) {
+            for(GameCell cell: arr) {
+                cell.setOnClickListener(this);
+            }
+        }
     }
 
     public GameBoard(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setWillNotDraw(false);
+        for(GameCell[] arr: cells) {
+            for(GameCell cell: arr) {
+                cell.setOnClickListener(this);
+            }
+        }
     }
 
     public GameBoard(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setWillNotDraw(false);
+        for(GameCell[] arr: cells) {
+            for(GameCell cell: arr) {
+                cell.setOnClickListener(this);
+            }
+        }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public GameBoard(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+    @Override
+    public void onClick(View view) {
+        GameCell cell = (GameCell)view;
+        //the boolean of this determine whether we should change player
+        if (cell.setInside(currentPlayer)) {
+            currentPlayer *= -1;
+            checkGameFinish();
+        }
     }
 
     @Override
@@ -108,7 +129,7 @@ public class GameBoard extends GridLayout {
     private boolean checkColumn() {
         int sum = 0;
         for(int i = 0; i < 3; i++) {
-            sum = cells[i][0].getInside() + cells[i][1].getInside() + cells[i][2].getInside();
+            sum = cells[i][0].add(cells[i][1], cells[i][2]);
             if(sum == 3 || sum == -3) {
                 winner = cells[i][0].getInside();
                 return true;
@@ -120,7 +141,7 @@ public class GameBoard extends GridLayout {
     private boolean checkRow() {
         int sum = 0;
         for(int i = 0; i < 3; i++) {
-            sum = cells[0][i].getInside() + cells[1][i].getInside() + cells[2][i].getInside();
+            sum = cells[0][i].add(cells[1][i], cells[2][i]);
             if(sum == 3 || sum == -3) {
                 winner = cells[0][i].getInside();
                 return true;
@@ -131,12 +152,12 @@ public class GameBoard extends GridLayout {
 
     private boolean checkDiagonal() {
         int sum = 0;
-        sum = cells[0][0].getInside() + cells[1][1].getInside() + cells[2][2].getInside();
+        sum = cells[0][0].add(cells[1][1], cells[2][2]);
         if (sum == 3 || sum == -3) {
             winner = cells[0][0].getInside();
             return true;
         }
-        sum = cells[0][2].getInside() + cells[1][1].getInside() + cells[2][0].getInside();
+        sum = cells[0][2].add(cells[1][1], cells[2][0]);
         if(sum == 3 || sum == -3) {
             winner = cells[0][2].getInside();
             return true;
@@ -148,7 +169,7 @@ public class GameBoard extends GridLayout {
     private boolean checkFull() {
         for(GameCell[] arr:cells) {
             for(GameCell cell: arr) {
-                if(cell.getInside() != -1 && cell.getInside() != 1) {
+                if(cell.getInside() != 1 && cell.getInside() != -1) {
                     return false;
                 }
             }

@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements GameBoard.OnFinis
             getSupportActionBar().setTitle(getString(R.string.circle_win));
         } else if(winner == -1) {
             getSupportActionBar().setTitle(getString(R.string.cross_win));
-        } else if(winner == 0) {
+        } else {
             getSupportActionBar().setTitle(getString(R.string.draw));
         }
     }

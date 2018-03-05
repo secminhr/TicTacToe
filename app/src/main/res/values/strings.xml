@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Tic Tac Toe</string>
+    <string name="circle_win">winner is: ○</string>
+    <string name="cross_win">winner is: ✕</string>
+    <string name="restart">Restart</string>
+    <string name="draw">Draw</string>
+</resources>

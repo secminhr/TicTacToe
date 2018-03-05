@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">圈圈叉叉</string>
+    <string name="circle_win">贏家是: ○</string>
+    <string name="cross_win">贏家是: ✕</string>
+    <string name="restart">重新開始</string>
+    <string name="draw">平手</string>
+</resources>
